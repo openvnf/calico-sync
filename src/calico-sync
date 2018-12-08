@@ -31,19 +31,24 @@ function main {
 
 function run_watcher {
     local CHANNEL="$1"
+
     echo "Publishing updates to ${CHANNEL}..."
     kubectl get configmap calico-config \
             --namespace kube-system \
             --watch \
             --output jsonpath="{.data.etcd_endpoints}" |
-        tee "${CHANNEL}"
+        tee "${CHANNEL}" &
+
+    local WATCHER="$!"
+    trap "kill -TERM '${WATCHER}'" SIGTERM SIGINT
+    wait "${WATCHER}"
 }
 
 function run_updater {
     local CHANNEL="$1"
     touch "${CHANNEL}"
     echo "Subscribing to ${CHANNEL}..."
-    inotifyd calico-sync-update "${CHANNEL}"
+    exec inotifyd calico-sync-update "${CHANNEL}"
 }
 
 function kubectl {

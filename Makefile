@@ -1,5 +1,5 @@
 PROJECT = calico-sync
-VERSION = 0.1.0
+VERSION = 0.1.1
 
 REGISTRY = quay.io
 USER = openvnf
