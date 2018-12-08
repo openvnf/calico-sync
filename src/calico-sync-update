@@ -11,7 +11,7 @@ function main {
 
     if [ -z "${EVENT}" ] || [ -z "${CHANNEL}" ]; then usage; fi
 
-    echo "Got ${EVENT} on ${CHANNEL}..."
+    echo "Got ${EVENT} on ${CHANNEL}"
     if [ "${EVENT}" != "c" ]; then return; fi
 
     CHANNEL_DATA="$(cat "${CHANNEL}")"
@@ -22,7 +22,7 @@ function main {
     update_calico_config "${CHANNEL_DATA}"
 
     echo
-    echo "Cleaning channel..."
+    echo "Cleaning ${CHANNEL}..."
     true > "${CHANNEL}"
 }
 
