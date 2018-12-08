@@ -1,0 +1,63 @@
+#!/bin/sh
+
+set -e
+
+USAGE=$(cat <<EOF
+Usage: calico-sync <Command>
+
+Commands
+    run watcher <Channel>     run watcher writing configmap updates to Channel
+    run updater <Channel>     run updater writing Channel updates to CNI config
+    update <Event> <Channel>  update CNI config with current Channel data
+                              used internaly by "updater"
+    version
+EOF
+)
+
+function main {
+    case "$1 $2" in
+        "run watcher"|\
+        "run updater")
+            local TASK="$2"
+            local CHANNEL="$3"
+
+            if [ -z "${CHANNEL}" ]; then usage; fi
+            run_"${TASK}" "${CHANNEL}"
+        ;;
+        "update $2") shift; update "$@" ;;
+        "version ") cat /version ;;
+        *) usage ;;
+    esac
+}
+
+function run_watcher {
+    local CHANNEL="$1"
+    echo "Publishing updates to ${CHANNEL}..."
+    kubectl get configmap calico-config \
+            --namespace kube-system \
+            --watch \
+            --output jsonpath="{.data.etcd_endpoints}" |
+        tee "${CHANNEL}"
+}
+
+function run_updater {
+    local CHANNEL="$1"
+    touch "${CHANNEL}"
+    echo "Subscribing to ${CHANNEL}..."
+    inotifyd calico-sync-update "${CHANNEL}"
+}
+
+function kubectl {
+    local SERVICE_ACCOUNT="/var/run/secrets/kubernetes.io/serviceaccount"
+    local CACERT="${SERVICE_ACCOUNT}/ca.crt"
+    local TOKEN; TOKEN="$(cat "${SERVICE_ACCOUNT}/token")"
+
+    /bin/kubectl --token "${TOKEN}" --certificate-authority "${CACERT}" "$@"
+}
+
+function usage {
+    >&2 echo "${USAGE}"
+    exit 2
+}
+
+main "$@"
