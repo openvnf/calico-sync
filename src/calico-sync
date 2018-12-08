@@ -8,8 +8,7 @@ Usage: calico-sync <Command>
 Commands
     run watcher <Channel>     run watcher writing configmap updates to Channel
     run updater <Channel>     run updater writing Channel updates to CNI config
-    update <Event> <Channel>  update CNI config with current Channel data
-                              used internaly by "updater"
+
     version
 EOF
 )
