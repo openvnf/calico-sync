@@ -38,7 +38,7 @@ function run_watcher {
                 --namespace kube-system \
                 --watch-only \
                 --output jsonpath="{.data.etcd_endpoints}" |
-            tee "${CHANNEL}" &
+            tee "${CHANNEL}" > /dev/null &
 
         local WATCHER="$!"
         trap "kill -TERM '${WATCHER}'" SIGTERM SIGINT
