@@ -51,7 +51,7 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: watcher
-        image: quay.io/openvnf/calico-sync:0.1.1
+        image: quay.io/openvnf/calico-sync:0.1.2
         args:
         - run
         - watcher
@@ -62,7 +62,7 @@ spec:
         - name: kubectl
           mountPath: /bin/kubectl
       - name: updater
-        image: quay.io/openvnf/calico-sync:0.1.1
+        image: quay.io/openvnf/calico-sync:0.1.2
         args:
         - run
         - updater
