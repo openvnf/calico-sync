@@ -36,7 +36,7 @@ function run_watcher {
     while :; do
         kubectl get configmap calico-config \
                 --namespace kube-system \
-                --watch-only \
+                --watch \
                 --output jsonpath="{.data.etcd_endpoints}" |
             tee "${CHANNEL}" > /dev/null &
 
