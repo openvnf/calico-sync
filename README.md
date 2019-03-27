@@ -4,10 +4,12 @@
 [![GitHub Release Badge]][GitHub Releases]
 [![Calico Releases Badge]][Calico Releases]
 
-When [Calico] uses [Etcd Datastore] in a [Kubernetes] cluster, Etcd endpoints
-specified in Calico Configmap should be in sync with Calico CNI configuration
-file on each node. Calico Sync watches changes of Etcd endpoints in the
-configmap and updates the CNI configuration file.
+When [Calico] uses [etcd datastore] in a [Kubernetes] cluster, [etcd] endpoints
+specified in Calico ConfigMap should be in sync with Calico CNI configuration
+file on each node (usually "/etc/cni/net.d/10-calico.conflist"). Calico Sync
+watches changes of etcd endpoints in the ConfigMap and updates the CNI
+configuration file. A typical case when the update could happen is when a etcd
+node joins or leaves a cluster.
 
 ## Install
 
@@ -15,12 +17,23 @@ To ensure sync on each node the solution uses [DaemonSet]. Install it from the
 [Manifest]:
 
 ```
-$ kubectl create -f https://raw.githubusercontent.com/openvnf/calico-sync/master/manifests/calico-sync.yaml
+$ kubectl create -f https://raw.githubusercontent.com/openvnf/calico-sync/master/manifests/calico-etcd-sync.yaml
 ```
+
+To stop syncing and uninstall:
+
+```
+$ kubectl delete -f https://raw.githubusercontent.com/openvnf/calico-sync/master/manifests/calico-etcd-sync.yaml
+```
+
+## Notes
+
+After version 0.1.1 the solution is based on [Kube Watch] and does not have
+its own sources or Docker images.
 
 ## License
 
-Copyright 2018 Travelping GmbH
+Copyright 2018-2019 Travelping GmbH
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,11 +49,13 @@ limitations under the License.
 
 <!-- Links -->
 
-[Calico]: https://docs.projectcalico.org/v3.3/introduction
-[Manifest]: manifests/calico-sync.yaml
+[etcd]: https://coreos.com/etcd/docs/latest
+[Calico]: https://docs.projectcalico.org/v3.6/introduction
+[Manifest]: manifests/calico-etcd-sync.yaml
 [DaemonSet]: https://kubernetes.io/docs/concepts/workloads/controllers/daemonset
 [Kubernetes]: https://kubernetes.io
-[Etcd Datastore]: https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/calico
+[Kube Watch]: https://github.com/travelping/kube-watch
+[etcd datastore]: https://docs.projectcalico.org/v3.6/getting-started/kubernetes/installation/calico#installing-with-the-etcd-datastore
 
 <!-- Badges -->
 
@@ -48,5 +63,5 @@ limitations under the License.
 [Apache 2.0 Badge]: https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg?style=flat-square
 [GitHub Releases]: https://github.com/openvnf/calico-sync/releases
 [GitHub Release Badge]: https://img.shields.io/github/release/openvnf/calico-sync/all.svg?style=flat-square
-[Calico Releases]: https://docs.projectcalico.org/v3.3/releases
-[Calico Releases Badge]: https://img.shields.io/badge/Calico-v3.1%20to%20v3.3-e6873a.svg?style=flat-square 
+[Calico Releases]: https://docs.projectcalico.org/v3.6/releases
+[Calico Releases Badge]: https://img.shields.io/badge/Calico-v3.1%20to%20v3.6-e6873a.svg?style=flat-square
